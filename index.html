@@ -61,7 +61,7 @@ footer{margin-top:42px;text-align:center;color:#9a9388;font-size:11px;letter-spa
   </section>
 
   <section class="screen" id="quiz">
-    <div class="qhead"><span class="eyebrow" id="category">01 · 불안이</span><span class="qnum" id="qnum">01 / 25</span></div>
+    <div class="qhead"><span class="eyebrow" id="category">MONEY &amp; EMOTION</span><span class="qnum" id="qnum">01 / 25</span></div>
     <div class="question" id="question"></div>
     <div id="choices"></div>
     <div class="actions"><button class="btn secondary" id="prev" onclick="move(-1)">← 이전</button><button class="btn" id="next" onclick="move(1)" disabled>다음 →</button></div>
@@ -147,10 +147,20 @@ const qs=[
 let answers=Array(25).fill(null),idx=0,order=qs.map((_,i)=>i);
 function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo({top:0,behavior:'smooth'});updateBar()}
 function updateBar(){let pct=({intro:0,quiz:idx/25*75,scoreScreen:85,resultScreen:100})[document.querySelector('.screen.active').id]||0;document.getElementById('bar').style.width=pct+'%'}
-function startTest(){idx=0;renderQuestion();show('quiz')}
-function renderQuestion(){let [type,q]=qs[idx],t=types.find(x=>x.id===type);document.getElementById('category').textContent=String(types.findIndex(x=>x.id===type)+1).padStart(2,'0')+' · '+t.name;document.getElementById('qnum').textContent=String(idx+1).padStart(2,'0')+' / 25';document.getElementById('question').textContent=q;let labels=['전혀 그렇지 않다','별로 그렇지 않다','보통이다','대체로 그렇다','매우 그렇다'];document.getElementById('choices').innerHTML=labels.map((l,i)=>`<button class="choice ${answers[idx]===i?'selected':''}" onclick="choose(${i})"><span class="radio"></span><span>${l}</span></button>`).join('');document.getElementById('prev').disabled=idx===0;document.getElementById('next').disabled=answers[idx]===null;document.getElementById('next').textContent=idx===24?'결과 확인 →':'다음 →';updateBar()}
-function choose(v){answers[idx]=v;renderQuestion()}
-function move(d){if(d===1&&answers[idx]===null)return;if(idx===24&&d===1){calculate();show('scoreScreen');return}idx=Math.max(0,Math.min(24,idx+d));renderQuestion()}
+/* 문항 순서 섞기: 같은 감정 문항이 연달아 나오지 않도록 섞습니다. 답은 원래 문항 번호(qs 기준)에 저장되어 점수 계산은 그대로입니다. */
+function shuffleOrder(){
+  let o;
+  for(let tries=0;tries<500;tries++){
+    o=qs.map((_,i)=>i);
+    for(let i=o.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[o[i],o[j]]=[o[j],o[i]]}
+    if(o.every((q,i)=>i===0||qs[q][0]!==qs[o[i-1]][0])) return o;
+  }
+  return o;
+}
+function startTest(){idx=0;answers=Array(25).fill(null);order=shuffleOrder();renderQuestion();show('quiz')}
+function renderQuestion(){let qi=order[idx],q=qs[qi][1];document.getElementById('category').textContent='MONEY & EMOTION';document.getElementById('qnum').textContent=String(idx+1).padStart(2,'0')+' / 25';document.getElementById('question').textContent=q;let labels=['전혀 그렇지 않다','별로 그렇지 않다','보통이다','대체로 그렇다','매우 그렇다'];document.getElementById('choices').innerHTML=labels.map((l,i)=>`<button class="choice ${answers[qi]===i?'selected':''}" onclick="choose(${i})"><span class="radio"></span><span>${l}</span></button>`).join('');document.getElementById('prev').disabled=idx===0;document.getElementById('next').disabled=answers[qi]===null;document.getElementById('next').textContent=idx===24?'결과 확인 →':'다음 →';updateBar()}
+function choose(v){answers[order[idx]]=v;renderQuestion()}
+function move(d){if(d===1&&answers[order[idx]]===null)return;if(idx===24&&d===1){calculate();show('scoreScreen');return}idx=Math.max(0,Math.min(24,idx+d));renderQuestion()}
 function calculate(){let counts=Object.fromEntries(types.map(t=>[t.id,0]));answers.forEach((a,i)=>{counts[qs[i][0]]+=a});window.counts=counts;let max=Math.max(...Object.values(counts));let winners=types.filter(t=>counts[t.id]===max);document.getElementById('scoreList').innerHTML=types.map(t=>`<div class="score-row"><span class="score-name">${t.name}</span><div class="track"><div class="fill" style="width:${counts[t.id]/20*100}%;background:${t.color}"></div></div><span class="score">${counts[t.id]}</span></div>`).join('');document.getElementById('winnerNote').innerHTML=max===0?'모든 문항에서 낮은 점수를 선택했어요. 결과를 가볍게 참고해 주세요.':`<strong>가장 높은 감정: ${winners.map(t=>t.name).join(' + ')}</strong><br>${winners.length>1?'공동으로 높은 감정이 나타났어요. 복합 유형으로 살펴보세요.':'이 감정이 현재 돈을 대하는 나의 대표적인 경향으로 나타났어요.'}`}
 function showResult(){let max=Math.max(...Object.values(counts));let winners=types.filter(t=>counts[t.id]===max);document.getElementById('resultContent').innerHTML=winners.map(t=>`<div class="result-card"><div class="type-label">${t.en} · ${counts[t.id]} / 20</div><h2 style="margin-top:8px">${t.name}</h2><div class="art" style="background:${t.bg}"><div class="emoji coin">${coinSVG(t)}</div></div><div class="tagline">“${t.line}”</div><div class="panel"><div class="section-label">01 · 나의 돈에 대한 믿음</div><p>${t.belief}</p></div><div class="panel"><div class="section-label">02 · 나의 돈에 대한 행동</div><ul>${t.behavior.map(x=>`<li>${x}</li>`).join('')}</ul></div><div class="panel"><div class="section-label">03 · 나에게 필요한 변화</div><p>${t.change}</p></div></div>`).join('');renderThink(winners);show('resultScreen')}
 function restart(){answers=Array(25).fill(null);idx=0;document.getElementById('thinkList').innerHTML='';resetShare();show('intro')}
@@ -276,7 +286,7 @@ function renderThink(winners){
 
 // 공개 테스트 주소가 생기면 여기에 입력하세요. 예: 'https://example.com/money-inside-out'
 // 비워두면 웹에 올려진 경우 현재 페이지 주소를, 내 컴퓨터에서 연 파일이면 링크 없이 공유합니다.
-const TEST_URL='https://mmichellekim.github.io/money-inside-out/';
+const TEST_URL='';
 
 let shareBusy=false,imageBusy=false,toastTimer=null,previewUrl=null;
 
