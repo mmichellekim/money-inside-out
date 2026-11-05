@@ -81,7 +81,7 @@ footer{margin-top:42px;text-align:center;color:#9a9388;font-size:11px;letter-spa
     <div class="panel">
       <div class="section-label">THINK ABOUT IT · 나에게 던지는 질문</div>
       <h3>돈과 나는 어떤 관계를 맺고 싶을까?</h3>
-      <p class="small">같은 감정을 가진 사람이라면 이렇게 답할지도 몰라요. 나와 닮은 부분이 있는지 떠올려 보세요.</p>
+      <p class="small"><span id="thinkIntro">같은 감정을 가진 사람이라면 이렇게 답할지도 몰라요.</span> 나와 닮은 부분이 있는지 떠올려 보세요.</p>
       <div id="thinkList"></div>
     </div>
     <div class="note"><strong>돈은 숫자이기도 하지만, 감정이기도 합니다.</strong><br>내가 돈을 대하는 방식을 이해하는 것은 내가 원하는 삶을 이해하는 일과도 연결됩니다. 오늘 발견한 나의 감정을 기억해 주세요. 돈과의 관계도 조금씩 달라질 수 있으니까요.</div>
@@ -276,8 +276,136 @@ apathy:[
 ]
 };
 function iramyeon(w){const c=w.charCodeAt(w.length-1)-0xAC00;return w+((c>=0&&c<=11171&&c%28)?'이라면':'라면')}
+/* ===== 1·2위 감정 조합별 예시 답변 (20개 조합 × 4문항) =====
+   키: '1위>2위'. 1위 감정이 답의 중심, 2위 감정이 결을 바꿉니다. */
+const comboExamples={
+'anxiety>sadness':[
+'더는 예전처럼 돈 때문에 포기하는 일이 없을 거라는 안도감이요. 부족했던 때로 돌아가지 않는다는 확신이 생길 것 같아요.',
+'힘들게 모은 돈을 잃고 다시 아무것도 없던 시절로 돌아가는 거요. 그때의 막막함이 아직도 생생해요.',
+'나를 위한 배움이나 여행이요. 써도 된다는 걸 알면서도 "혹시 모르니까" 하며 계속 통장에 넣어 둬요.',
+'과거의 부족함을 메우려는 돈이 아니라, 지금의 나를 편하게 해주는 돈이었으면 해요.'],
+'anxiety>anger':[
+'불리한 조건이 와도 거절할 수 있는 여유요. 돈이 부족해서 억울한 걸 참는 일이 줄어들 것 같아요.',
+'애써 지켜온 돈을 남의 실수나 불공정한 일로 잃는 거요. 생각만 해도 불안하고 화가 나요.',
+'계약 조건이나 보수 재협상이요. 따지고 싶은 마음은 큰데, 그러다 일이 끊길까 봐 망설여요.',
+'걱정하며 움켜쥐기보다, 내 몫을 당당하게 지키면서도 마음은 편한 관계면 좋겠어요.'],
+'anxiety>joy':[
+'하고 싶은 걸 할 때 "이래도 되나" 하는 마음 없이 온전히 즐길 수 있을 것 같아요.',
+'신나서 쓰고 벌였던 일이 결국 감당하지 못할 부담으로 돌아오는 거요.',
+'오래 꿈꿔온 프로젝트나 큰 여행이요. 설레는데도 손실 계산부터 하게 돼서 계속 미루고 있어요.',
+'안전망은 든든하게 두고, 그 안에서는 마음껏 즐길 수 있는 관계를 만들고 싶어요.'],
+'anxiety>apathy':[
+'돈 생각을 덜 해도 되는 상태요. 걱정은 되는데 들여다보기는 싫은 마음에서 벗어나고 싶어요.',
+'신경 쓰지 않는 사이에 문제가 커져서 손쓸 수 없게 되는 거요. 걱정은 되는데 확인은 안 하게 돼요.',
+'지출 정리나 보험 점검이요. 막상 보면 더 불안해질까 봐 열어보지 못하고 있어요.',
+'겁내며 피하는 대신, 짧게라도 자주 들여다보면서 안심할 수 있는 관계가 되고 싶어요.'],
+'sadness>anxiety':[
+'그동안 참았던 것들을 해도 다시 부족해지지 않는다는 믿음이요. 마음껏 누리면서도 불안하지 않을 것 같아요.',
+'또다시 돈이 없어서 원하는 걸 놓치는 거요. 그래서 써야 할 때도 자꾸 아끼게 돼요.',
+'미뤄둔 배움이나 나를 위한 경험이요. 하고 싶지만 나중에 돈이 모자랄까 봐 결정을 못 해요.',
+'아쉬움과 걱정 대신, 지금 원하는 것을 조금씩 허락하는 관계가 되고 싶어요.'],
+'sadness>anger':[
+'남들은 당연하게 누리던 걸 나도 누릴 수 있겠죠. 그동안 불공평하다고 느꼈던 마음이 조금 풀릴 것 같아요.',
+'아무리 노력해도 출발선의 차이를 따라잡지 못하는 거요. 그 생각을 하면 서글프고 억울해요.',
+'더 나은 대우를 요구하는 일이요. 내 몫을 말하고 싶은데, 괜히 욕심부리는 사람이 될까 봐 삼켜요.',
+'남과 비교하며 속상해하기보다, 내 가치를 내가 먼저 인정하는 관계를 맺고 싶어요.'],
+'sadness>joy':[
+'포기했던 꿈들을 다시 꺼내 볼 수 있을 것 같아요. 생각만 해도 조금 설레요.',
+'다시 기회가 왔을 때 돈 때문에 또 놓치는 거요. 이번엔 꼭 잡고 싶거든요.',
+'오래 하고 싶었던 취미나 공부요. 시작하면 즐거울 걸 아는데, 나한테 써도 되나 싶어 망설여요.',
+'과거의 아쉬움을 채우는 것을 넘어, 앞으로의 즐거움을 만들어가는 관계였으면 해요.'],
+'sadness>apathy':[
+'돈 이야기만 나오면 드는 서운한 마음이 사라질 것 같아요. 그래서인지 오히려 잘 생각을 안 하게 돼요.',
+'지금처럼 그냥저냥 지내다가 결국 아무것도 달라지지 않는 거요.',
+'재정 계획 세우기요. 들여다보면 부족한 것만 보일 것 같아서 손이 안 가요.',
+'아프지 않게 조금씩 마주하면서, 작은 변화부터 느껴보는 관계가 되고 싶어요.'],
+'anger>anxiety':[
+'불공정한 조건에 끌려다니지 않아도 되겠죠. 돈이 있으면 싫은 건 싫다고 말할 수 있으니까요.',
+'누군가에게 이용당해서 모아둔 돈까지 잃는 거요. 그래서 계약서를 몇 번씩 확인해요.',
+'불합리한 거래처나 계약을 정리하는 일이요. 끊고 싶은데 수입이 줄까 봐 버티고 있어요.',
+'화와 걱정으로 지키는 대신, 원칙을 세워두고 차분하게 지키는 관계가 되고 싶어요.'],
+'anger>sadness':[
+'그동안 제대로 인정받지 못했던 시간을 보상받는 느낌일 것 같아요.',
+'열심히 해도 결국 나만 손해 보는 사람으로 남는 거요. 지금까지 그래 왔던 것 같아서 더 속상해요.',
+'연봉이나 처우 이야기요. 말해봤자 달라지지 않을 거라는 생각에 계속 참고 있어요.',
+'억울함을 쌓아두지 않고, 그때그때 내 몫을 말하는 관계가 되고 싶어요.'],
+'anger>joy':[
+'내 가치를 알아주는 사람들과만 신나게 일할 수 있을 것 같아요.',
+'열정을 쏟은 일이 정당한 대가 없이 끝나는 거요. 좋아서 한 일일수록 더 억울해요.',
+'단가를 올리거나 새로운 수익 모델을 시도하는 일이요. 기회는 보이는데 협상이 부담스러워요.',
+'정당하게 받고 즐겁게 쓰는 관계요. 둘 중 어느 것도 놓치고 싶지 않아요.'],
+'anger>apathy':[
+'돈 때문에 신경을 곤두세울 일이 줄어들겠죠. 따지는 것도 이제 지치거든요.',
+'손해 보는 줄 알면서도 귀찮아서 그냥 넘어가는 거요. 나중에 더 크게 억울해질까 봐요.',
+'환불 요청이나 정산 확인 같은 일이요. 화는 나는데 처리하기가 귀찮아서 쌓아두고 있어요.',
+'화를 내거나 외면하는 대신, 필요한 만큼만 분명하게 챙기는 관계가 되고 싶어요.'],
+'joy>anxiety':[
+'좋은 경험에 더 마음 편히 돈을 쓸 수 있을 것 같아요. 지금은 즐겁게 쓰고 나서도 "이래도 되나" 하는 마음이 한구석에 남거든요.',
+'즐거움에 빠져 있다가 대비 없이 갑자기 위기를 맞는 거요.',
+'해보고 싶은 투자나 새로운 도전이요. 설레긴 하는데 혹시 몰라 한 번 더 재보고 있어요.',
+'즐겁게 쓰되 비상금은 든든하게, 마음 편히 누리는 관계를 만들고 싶어요.'],
+'joy>sadness':[
+'예전엔 꿈도 못 꾸던 경험을 소중한 사람들과 함께할 수 있을 것 같아요.',
+'지금의 여유가 사라지고 다시 포기해야 하는 시절로 돌아가는 거요.',
+'가족이나 나를 위한 큰 선물이요. 기쁘게 해주고 싶은데, 예전 기억 때문에 쉽게 결정이 안 돼요.',
+'지나간 아쉬움을 지금의 즐거움으로 채워가는 따뜻한 관계였으면 해요.'],
+'joy>anger':[
+'하고 싶은 일을 마음껏 벌일 수 있겠죠. 그리고 손해 보는 조건을 웃으며 넘기지 않아도 될 것 같아요. 즐겁게 일하되 제 몫은 제대로 받고 싶거든요.',
+'좋은 마음으로 나눴는데 이용당했다고 느끼는 거요. 그럴 땐 즐거움이 한순간에 식어요.',
+'함께하던 사람과 돈 문제를 정리하는 일이요. 분위기를 깨기 싫어서 말을 미루고 있어요.',
+'기꺼이 나누되 선은 분명한, 즐겁고 공정한 관계를 만들고 싶어요.'],
+'joy>apathy':[
+'지금처럼 즐겁게 살면서 돈 걱정은 아예 안 해도 되는 상태요.',
+'즐겁게 쓰기만 하고 확인은 안 하다가, 어느 날 잔액을 보고 깜짝 놀라는 거요.',
+'가계부 쓰기나 장기 계획 세우기요. 지금이 좋은데 굳이 숫자를 들여다보고 싶지 않아요.',
+'즐거움은 지키면서, 가볍게라도 돈의 흐름은 알고 있는 관계가 되고 싶어요.'],
+'apathy>anxiety':[
+'굳이 신경 쓰지 않아도 괜찮다는 안심이요. 사실 마음 한편엔 늘 걱정이 있거든요.',
+'모른 척하던 사이에 감당할 수 없는 문제가 생기는 거요. 그래서 더 확인하기가 무서워요.',
+'보험·연금 점검이나 대출 정리요. 열어보면 걱정만 커질 것 같아 계속 미뤄요.',
+'피하지도 겁내지도 않고, 담담하게 확인할 수 있는 관계가 되고 싶어요.'],
+'apathy>sadness':[
+'크게 달라질 건 없을 것 같아요. 다만 돈 때문에 서운했던 마음은 좀 덜할 것 같아요.',
+'이대로 시간이 흘러서 하고 싶었던 것들을 결국 못 해보는 거요.',
+'나를 위한 계획 세우기요. 해봤자 크게 바뀌지 않을 것 같아서 손을 놓고 있어요.',
+'기대를 내려놓기보다, 작은 것부터 다시 원해보는 관계가 되고 싶어요.'],
+'apathy>anger':[
+'돈 문제로 얽히거나 다툴 일이 없어지겠죠. 그게 제일 편할 것 같아요.',
+'신경 안 쓰고 있다가 누군가에게 손해를 보는 거요. 알고 나서야 뒤늦게 화가 나요.',
+'밀린 정산 확인이나 부당한 요금 문의요. 화는 나는데 따지는 과정이 귀찮아서 그냥 둬요.',
+'관심을 조금만 더 두고, 손해 볼 땐 제때 말할 수 있는 관계가 되고 싶어요.'],
+'apathy>joy':[
+'돈을 의식하지 않고 좋아하는 일에 그냥 뛰어들 수 있을 것 같아요.',
+'즐겁게 지내다가 정작 필요한 때에 아무 준비가 안 되어 있는 거요.',
+'자동이체 저축이나 간단한 투자 시작하기요. 좋다는 건 아는데 알아보는 게 귀찮아요.',
+'복잡하게 관리하지 않아도, 즐거움과 여유가 저절로 쌓이는 가벼운 관계면 좋겠어요.']
+};
+/* 어떤 예시를 보여줄지 결정
+   - 1위 1개 + 2위 1개(0점 초과): 해당 조합
+   - 1위 2개 동점: A>B, B>A 두 조합
+   - 1위 3개 이상 동점, 또는 2위가 동점·0점: 1위 감정별 기본 예시 */
+function thinkPairs(winners){
+  const single=t=>({p:t,s:null,ex:thinkExamples[t.id]});
+  const combo=(a,b)=>({p:a,s:b,ex:comboExamples[a.id+'>'+b.id]});
+  if(winners.length===2) return [combo(winners[0],winners[1]),combo(winners[1],winners[0])];
+  if(winners.length>2) return winners.map(single);
+  const main=winners[0],rest=types.filter(t=>t!==main);
+  const m2=Math.max(...rest.map(t=>counts[t.id])),seconds=rest.filter(t=>counts[t.id]===m2);
+  return (seconds.length===1&&m2>0)?[combo(main,seconds[0])]:[single(main)];
+}
+function pairLabel(x){return x.s?`${x.p.name} + ${iramyeon(x.s.name)}`:iramyeon(x.p.name)}
+function josa(w,a,b){const c=w.charCodeAt(w.length-1)-0xAC00;return (c>=0&&c<=11171&&c%28)?a:b}
+function thinkIntroText(pairs){
+  if(pairs.length===1&&pairs[0].s){const {p,s}=pairs[0];
+    return `1위 ${p.name}(${counts[p.id]}점)에 2위 ${s.name}(${counts[s.id]}점)${josa(s.name,'이','가')} 더해진 사람이라면 이렇게 답할지도 몰라요.`}
+  if(pairs.length===2&&pairs[0].s){const A=pairs[0].p.name,B=pairs[0].s.name;
+    return `${A}${josa(A,'과','와')} ${B}${josa(B,'이','가')} 함께 가장 높은 사람이라면 이렇게 답할지도 몰라요.`}
+  return '같은 감정을 가진 사람이라면 이렇게 답할지도 몰라요.';
+}
 function renderThink(winners){
-  document.getElementById('thinkList').innerHTML=thinkQuestions.map((q,i)=>`<div class="think-q"><p class="think-q-title">${i+1}. ${q}</p>${winners.map(t=>`<div class="think-ex" style="border-left-color:${t.color}"><span class="who">${coinSVG(t,24)} ${iramyeon(t.name)}</span><p>${thinkExamples[t.id][i]}</p></div>`).join('')}</div>`).join('');
+  const pairs=thinkPairs(winners);
+  document.getElementById('thinkIntro').textContent=thinkIntroText(pairs);
+  document.getElementById('thinkList').innerHTML=thinkQuestions.map((q,i)=>`<div class="think-q"><p class="think-q-title">${i+1}. ${q}</p>${pairs.map(x=>`<div class="think-ex" style="border-left-color:${x.p.color}"><span class="who">${coinSVG(x.p,24)}${x.s?coinSVG(x.s,20):''} ${pairLabel(x)}</span><p>${x.ex[i]}</p></div>`).join('')}</div>`).join('');
 }
 
 /* ===================== 결과 공유 (추가) =====================
@@ -324,10 +452,11 @@ function buildShareText(){
     lines.push('01 · 나의 돈에 대한 믿음',t.belief,'','02 · 나의 돈에 대한 행동',...t.behavior.map(b=>`· ${b}`),'','03 · 나에게 필요한 변화',t.change);
   });
   // THINK ABOUT IT
-  lines.push('','━━━━━━━━━━','THINK ABOUT IT · 돈과 나는 어떤 관계를 맺고 싶을까?');
+  const pairs=thinkPairs(w);
+  lines.push('','━━━━━━━━━━','THINK ABOUT IT · 돈과 나는 어떤 관계를 맺고 싶을까?',thinkIntroText(pairs));
   thinkQuestions.forEach((q,i)=>{
     lines.push('',`${i+1}. ${q}`);
-    w.forEach(t=>lines.push(`${w.length>1?iramyeon(t.name)+': ':'→ '}${thinkExamples[t.id][i]}`));
+    pairs.forEach(x=>lines.push(`${pairs.length>1?pairLabel(x)+': ':'→ '}${x.ex[i]}`));
   });
   lines.push('','━━━━━━━━━━','혹시 당신은 돈 앞에서 어떤 감정을 느끼나요?',url?`나의 돈 감정을 확인해보세요! 👉 ${url}`:'나의 돈 감정을 확인해보세요!');
   return lines.join('\n');
@@ -489,14 +618,15 @@ function paintResult(ctx,draw,w,imgs,W,H){
   y+=panel(y,(yy,dr)=>{const sv=draw;draw=dr;
     let h=label('THINK ABOUT IT · 나에게 던지는 질문',M+PAD,yy);
     h+=para('돈과 나는 어떤 관계를 맺고 싶을까?',M+PAD,yy+h+30,TW,`800 38px ${FONT}`,'#24231f',52)+10;
-    h+=para('같은 감정을 가진 사람이라면 이렇게 답할지도 몰라요.',M+PAD,yy+h+20,TW,`500 24px ${FONT}`,'#77736c',36)+8;
+    const pairs=thinkPairs(w);
+    h+=para(thinkIntroText(pairs),M+PAD,yy+h+20,TW,`500 24px ${FONT}`,'#77736c',36)+8;
     thinkQuestions.forEach((q,qi)=>{
       h+=24;h+=para(`${qi+1}. ${q}`,M+PAD,yy+h+24,TW,`750 29px ${FONT}`,'#24231f',44)+6;
-      w.forEach(t=>{
-        const top=yy+h+8,ex=thinkExamples[t.id][qi];
+      pairs.forEach(x=>{
+        const t=x.p,top=yy+h+8,ex=x.ex[qi];
         ctx.font=BODY;const lines=wrapLines(ctx,ex,TW-60).length;const bh=28+34+lines*LH+10;
         D(()=>{rr(ctx,M+PAD,top,TW,bh,18);ctx.fillStyle='#faf7f1';ctx.fill();ctx.fillStyle=t.color;ctx.fillRect(M+PAD,top,7,bh)});
-        D(()=>{ctx.font=`800 22px ${FONT}`;ctx.fillStyle='#77736c';ctx.textAlign='left';ctx.fillText(iramyeon(t.name),M+PAD+30,top+46)});
+        D(()=>{ctx.font=`800 22px ${FONT}`;ctx.fillStyle='#77736c';ctx.textAlign='left';ctx.fillText(pairLabel(x),M+PAD+30,top+46)});
         para(ex,M+PAD+30,top+92,TW-60,BODY,BC,LH);
         h+=bh+18;
       });
