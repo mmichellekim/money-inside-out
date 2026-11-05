@@ -1,0 +1,479 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#f7f4ee">
+<title>MONEY INSIDE OUT | 나의 머니 이모션</title>
+<style>
+:root{--ink:#24231f;--muted:#77736c;--paper:#f7f4ee;--card:#fffefa;--line:#e8e2d8;--accent:#7968a8}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font-family:Inter,-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;line-height:1.65}
+button{font:inherit;cursor:pointer}.wrap{width:min(760px,100%);margin:auto;padding:24px 20px 56px}.top{display:flex;justify-content:space-between;align-items:center;font-size:12px;letter-spacing:.14em;font-weight:800;color:#6c665e}.top span:last-child{letter-spacing:0;font-weight:600}
+.progress{height:4px;background:#e8e2d8;border-radius:9px;margin:20px 0 34px;overflow:hidden}.bar{height:100%;width:0;background:#7968a8;transition:width .25s}
+.screen{display:none;animation:fade .25s ease}.screen.active{display:block}@keyframes fade{from{opacity:.3;transform:translateY(5px)}to{opacity:1;transform:none}}
+.eyebrow{font-size:12px;letter-spacing:.14em;color:var(--muted);font-weight:800;margin:0 0 12px}.hero h1{font-size:clamp(38px,8vw,64px);line-height:1.08;letter-spacing:-.055em;margin:0 0 16px}.hero h1 em{font-style:normal;color:var(--accent)}h2{font-size:clamp(27px,5vw,40px);letter-spacing:-.04em;line-height:1.2;margin:0 0 14px}h3{font-size:20px;margin:0 0 8px;letter-spacing:-.03em}p{margin:0 0 14px}.lead{font-size:17px;color:#514d46;max-width:610px}.small{font-size:13px;color:var(--muted)}
+.art{border-radius:24px;min-height:190px;display:flex;align-items:center;justify-content:center;margin:25px 0;padding:25px;overflow:hidden;position:relative}
+.art .coin{font-size:0;line-height:0}.art .coin svg{width:min(210px,58vw);height:auto}
+.art .emoji{font-size:100px;filter:drop-shadow(0 12px 10px #00000012);position:relative;z-index:1}
+.art:before,.art:after{content:"";position:absolute;border-radius:50%;background:#ffffff65}.art:before{width:190px;height:190px;left:-35px;top:-80px}.art:after{width:150px;height:150px;right:-20px;bottom:-70px}
+.btn{border:0;border-radius:999px;background:#292821;color:white;padding:14px 24px;font-weight:750;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:50px}.btn.secondary{background:transparent;color:var(--ink);border:1px solid #cfc8bd}.btn:disabled{opacity:.35;cursor:not-allowed}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:28px}.actions .btn{flex:1}
+.note{padding:16px 18px;border-radius:16px;background:#efebe3;color:#5e584f;font-size:14px;margin:20px 0}
+.qhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}.qnum{font-size:13px;color:var(--muted);font-weight:700}.question{font-size:clamp(23px,5vw,32px);line-height:1.4;letter-spacing:-.035em;margin:14px 0 26px;min-height:110px}
+.choice{display:flex;align-items:center;gap:13px;padding:17px;border:1px solid var(--line);border-radius:16px;background:var(--card);margin:10px 0;text-align:left;width:100%;color:var(--ink);transition:.15s}
+.choice:hover{border-color:#aaa0c5}.choice.selected{border:2px solid var(--accent);background:#f1eef7;padding:16px}.radio{width:22px;height:22px;border:1.5px solid #aaa197;border-radius:50%;flex:none;display:grid;place-items:center}.selected .radio{border-color:var(--accent);background:var(--accent)}.selected .radio:after{content:"";width:8px;height:8px;border-radius:50%;background:white}
+.result-card,.panel{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:23px;margin:16px 0}.type-label{font-size:12px;letter-spacing:.15em;font-weight:800;color:var(--muted)}.tagline{font-size:21px;font-weight:800;letter-spacing:-.035em;margin:15px 0 22px}.section-label{font-size:12px;letter-spacing:.12em;color:var(--muted);font-weight:850;margin-bottom:7px}.panel p{color:#514d46}.panel ul{padding-left:20px;margin:8px 0 0;color:#514d46}.panel li{margin:5px 0}.score-row{display:flex;align-items:center;gap:12px;margin:13px 0}.score-name{width:72px;font-size:14px;font-weight:700}.track{height:9px;background:#eee9e1;border-radius:20px;flex:1;overflow:hidden}.fill{height:100%;border-radius:20px}.score{font-size:13px;color:var(--muted);width:28px;text-align:right;font-variant-numeric:tabular-nums}
+.think-q{margin:22px 0 0;word-break:keep-all}.think-q:first-child{margin-top:18px}.think-q-title{font-weight:750;font-size:15px;margin:0 0 8px;color:var(--ink)}
+.think-ex{border-left:4px solid var(--line);background:#faf7f1;border-radius:4px 14px 14px 4px;padding:12px 15px;margin:8px 0 0}
+.think-ex .who{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:800;letter-spacing:.04em;color:var(--muted);margin-bottom:3px}
+.think-ex p{margin:0;color:#514d46;font-size:15px}
+.reflection{width:100%;border:1px solid var(--line);border-radius:14px;padding:13px 14px;background:white;font:inherit;margin:8px 0 15px;min-height:72px;resize:vertical}
+footer{margin-top:42px;text-align:center;color:#9a9388;font-size:11px;letter-spacing:.12em}
+@media(min-width:650px){.wrap{padding-top:32px}.art{min-height:230px}}
+/* ===== 결과 공유 (추가) ===== */
+.share{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:26px 23px;margin:30px 0 0;text-align:center;word-break:keep-all}
+.share h3{font-size:22px;margin:4px 0 8px}.share .small{margin:0 0 20px}
+.share-buttons{display:grid;grid-template-columns:1fr;gap:10px}
+.share-buttons .btn{width:100%}
+.share-status{min-height:22px;margin:14px 0 0;font-size:14px;font-weight:700;color:var(--accent)}
+.share-manual{display:none;text-align:left;margin-top:12px}.share-manual.show{display:block}
+.share-manual textarea{width:100%;min-height:190px;border:1px solid var(--line);border-radius:14px;padding:13px 14px;background:white;font:inherit;font-size:14px;resize:vertical;color:var(--ink)}
+.share-preview{display:none;margin-top:16px}.share-preview.show{display:block}
+.share-preview img{width:min(100%,360px);border-radius:16px;border:1px solid var(--line);display:block;margin:0 auto 8px}
+.toast{position:fixed;left:50%;bottom:28px;transform:translate(-50%,20px);background:#292821;color:#fff;padding:12px 20px;border-radius:999px;font-size:14px;font-weight:700;opacity:0;pointer-events:none;transition:.25s;z-index:20;max-width:calc(100% - 40px);text-align:center}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+@media(min-width:560px){.share-buttons{grid-template-columns:1fr 1fr}.share-buttons .btn.wide{grid-column:1 / -1}}
+@media print{.share,.toast{display:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top"><span>MONEY INSIDE OUT</span><span>SELF-DISCOVERY TEST</span></div>
+  <div class="progress"><div class="bar" id="bar"></div></div>
+
+  <section class="screen active" id="intro">
+    <p class="eyebrow">MONEY & EMOTION</p>
+    <div class="hero"><h1>돈 앞에서,<br>나는 어떤 <em>감정</em>일까?</h1></div>
+    <p class="lead">돈을 벌고, 쓰고, 모으고, 잃는 순간. 내 안에서는 어떤 감정이 가장 크게 작동할까요?</p>
+    <div class="art" style="background:#eee9df"><div class="emoji">💭</div></div>
+    <p>이 테스트는 돈을 대하는 나의 감정과 행동 패턴을 살펴보는 자기 탐색입니다. 정답은 없어요. 최근 3~6개월의 나를 떠올리며 솔직하게 답해 주세요.</p>
+    <div class="note">총 25문항 · 약 5분<br>각 문항에서 나에게 가장 가까운 답 하나를 선택합니다. 결과는 가장 자주 선택한 감정을 중심으로 보여줍니다.</div>
+    <button class="btn" onclick="startTest()">테스트 시작하기 →</button>
+  </section>
+
+  <section class="screen" id="quiz">
+    <div class="qhead"><span class="eyebrow" id="category">01 · 불안이</span><span class="qnum" id="qnum">01 / 25</span></div>
+    <div class="question" id="question"></div>
+    <div id="choices"></div>
+    <div class="actions"><button class="btn secondary" id="prev" onclick="move(-1)">← 이전</button><button class="btn" id="next" onclick="move(1)" disabled>다음 →</button></div>
+  </section>
+
+  <section class="screen" id="scoreScreen">
+    <p class="eyebrow">YOUR MONEY EMOTION</p><h2>나의 감정 지도</h2>
+    <p class="small">각 감정의 선택 횟수입니다. 가장 높은 점수가 메인 머니 이모션이에요.</p>
+    <div class="result-card" id="scoreList"></div>
+    <div class="note" id="winnerNote"></div>
+    <button class="btn" onclick="showResult()">나의 결과 보기 →</button>
+  </section>
+
+  <section class="screen" id="resultScreen">
+    <p class="eyebrow">YOUR MAIN MONEY EMOTION</p>
+    <div id="resultContent"></div>
+    <div class="panel">
+      <div class="section-label">THINK ABOUT IT · 나에게 던지는 질문</div>
+      <h3>돈과 나는 어떤 관계를 맺고 싶을까?</h3>
+      <p class="small">같은 감정을 가진 사람이라면 이렇게 답할지도 몰라요. 나와 닮은 부분이 있는지 떠올려 보세요.</p>
+      <div id="thinkList"></div>
+    </div>
+    <div class="note"><strong>돈은 숫자이기도 하지만, 감정이기도 합니다.</strong><br>내가 돈을 대하는 방식을 이해하는 것은 내가 원하는 삶을 이해하는 일과도 연결됩니다. 오늘 발견한 나의 감정을 기억해 주세요. 돈과의 관계도 조금씩 달라질 수 있으니까요.</div>
+    <div class="actions"><button class="btn secondary" onclick="restart()">다시 테스트하기</button><button class="btn" onclick="window.print()">결과 저장 / 인쇄</button></div>
+    <div class="share" id="shareSection">
+      <p class="eyebrow">SHARE YOUR RESULT</p>
+      <h3>당신의 돈 감정은 어떤 모습인가요?</h3>
+      <p class="small">나의 결과를 친구와 공유하고, 서로의 돈 감정을 비교해보세요.</p>
+      <div class="share-buttons">
+        <button class="btn wide" id="shareBtn" type="button" onclick="shareResult()">결과 공유하기</button>
+        <button class="btn secondary" id="copyBtn" type="button" onclick="copyResult()">결과 복사하기</button>
+        <button class="btn secondary" id="imageBtn" type="button" onclick="shareImage()">이미지로 저장·공유</button>
+      </div>
+      <p class="share-status" id="shareStatus" role="status" aria-live="polite"></p>
+      <div class="share-manual" id="shareManual">
+        <p class="small">아래 문장을 길게 누르거나 전체 선택해서 복사해 주세요.</p>
+        <textarea id="shareManualText" readonly aria-label="공유할 결과 문장"></textarea>
+      </div>
+      <div class="share-preview" id="sharePreview">
+        <img id="sharePreviewImg" alt="나의 머니 이모션 결과 이미지">
+        <p class="small">이미지를 길게 눌러 저장할 수도 있어요.</p>
+      </div>
+    </div>
+  </section>
+  <footer>MADE FOR SELF-REFLECTION · MONEY INSIDE OUT</footer>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script>
+const types=[
+{id:'anxiety',name:'불안이',en:'THE WORRIER',color:'#e8bd62',bg:'#f7efd9',emoji:'😟',line:'돈이 있어도, 언제 없어질지 모른다는 생각이 먼저 든다.',belief:'돈은 나를 지켜주는 안전장치다. 충분히 가지고 있어야 안심할 수 있고, 언제든 예상치 못한 일이 생길 수 있다고 생각한다.',behavior:['돈을 쓰기 전에 미래의 지출부터 걱정한다.','충분히 벌어도 모자란다고 느낀다.','새로운 기회보다 손실 가능성을 먼저 계산한다.'],change:'돈을 더 많이 모으는 것만이 안정감을 만드는 방법은 아니다. 내가 감당할 수 있는 위험의 범위를 정하고, 현재 가진 돈으로도 충분히 선택할 수 있다는 경험을 쌓아보자.'},
+{id:'sadness',name:'슬픔이',en:'THE LONGING ONE',color:'#76a9d5',bg:'#e7f0f7',emoji:'🥺',line:'돈이 있었다면 조금 더 나은 삶을 살 수 있었을 텐데.',belief:'돈은 내가 누리지 못했던 것, 놓쳐버린 기회와 연결되어 있다. 돈이 부족했던 경험이 지금의 나에게도 영향을 미친다.',behavior:['다른 사람의 경제적 여유를 보며 박탈감을 느낀다.','과거의 소비나 경제적 선택을 후회한다.','돈 때문에 원하는 것을 포기하는 일이 익숙하다.'],change:'과거의 경제적 경험이 현재의 나를 모두 설명하지는 않는다. 내가 정말 원하는 것이 무엇인지 다시 발견하고, 작은 선택부터 스스로에게 허락해 보자.'},
+{id:'anger',name:'분노',en:'THE CHALLENGER',color:'#d97769',bg:'#f8e9e5',emoji:'😠',line:'내가 노력한 만큼 정당하게 대우받고 싶다.',belief:'돈은 노력과 가치에 대한 정당한 보상이다. 불공정한 거래나 불균형한 관계를 받아들이기 어렵다.',behavior:['노력에 비해 보상이 적으면 억울함을 느낀다.','손해를 보거나 이용당했다고 느끼면 오래 기억한다.','돈과 관련된 갈등에서 쉽게 물러서지 않는다.'],change:'억울함과 분노를 나를 지키는 힘으로 바꿔보자. 감정적으로 반응하기 전에 내가 원하는 보상과 조건을 명확하게 표현하는 연습이 필요하다.'},
+{id:'joy',name:'기쁨이',en:'THE OPTIMIST',color:'#86b58b',bg:'#eaf2e8',emoji:'😊',line:'돈은 내가 원하는 삶을 만들어가는 즐거운 도구다.',belief:'돈은 새로운 경험과 가능성을 열어주는 수단이다. 돈을 통해 더 많은 것을 경험하고, 사람들과 나누고, 성장할 수 있다고 믿는다.',behavior:['좋은 경험과 소중한 사람에게 기꺼이 돈을 쓴다.','새로운 수익 기회를 발견하면 설렌다.','돈을 쓰는 것에서 즐거움과 의미를 찾는다.'],change:'돈을 즐겁게 사용하는 능력은 소중한 강점이다. 여기에 지속 가능한 계획을 더해보자. 지금의 즐거움과 미래의 선택권을 함께 지킬 수 있다.'},
+{id:'apathy',name:'무관심',en:'THE AVOIDER',color:'#aaa2b6',bg:'#efedf2',emoji:'😶',line:'돈은 중요하지만, 굳이 지금 생각하고 싶지는 않다.',belief:'돈은 중요하지만 생각한다고 해결되는 것도 아니라고 느낀다. 때로는 돈을 마주하는 일이 피곤하거나 부담스럽다.',behavior:['잔액이나 지출 내역을 자주 확인하지 않는다.','재정 계획을 세우는 일을 미룬다.','돈 문제가 생겨도 일단 외면하고 싶어진다.'],change:'돈을 완벽하게 관리하려고 시작할 필요는 없다. 일주일에 한 번 잔액과 지출을 확인하는 것부터 시작해 보자. 돈을 마주하는 작은 습관이 선택권을 되찾는 첫걸음이 될 수 있다.'}
+];
+const qs=[
+['anxiety','통장에 돈이 있어도 예상치 못한 지출이 생길까 봐 늘 걱정한다.'],
+['anxiety','돈을 쓸 때 가격보다 앞으로 돈이 부족해질 가능성을 먼저 생각한다.'],
+['anxiety','돈을 벌고 있어도 충분히 모으지 못했다는 생각에 마음이 불편하다.'],
+['anxiety','투자나 새로운 사업처럼 돈이 걸린 결정은 손실이 두려워 쉽게 내리지 못한다.'],
+['anxiety','경제적으로 안정됐다고 느끼려면 남들보다 훨씬 많은 돈이 있어야 할 것 같다.'],
+['sadness','돈 때문에 하고 싶은 일이나 경험을 포기했던 기억이 자주 떠오른다.'],
+['sadness','다른 사람의 경제적 여유를 보면 내가 갖지 못한 것들이 먼저 생각난다.'],
+['sadness','돈을 잘못 쓰거나 잃으면 스스로가 초라하고 한심하게 느껴진다.'],
+['sadness','돈이 부족했던 과거의 경험이 지금도 나의 선택에 영향을 준다.'],
+['sadness','돈이 있었다면 내 삶이 지금보다 훨씬 나았을 것이라고 생각한다.'],
+['anger','내가 들인 노력에 비해 충분한 돈을 받지 못하면 억울하고 화가 난다.'],
+['anger','돈 문제로 누군가에게 손해를 보거나 이용당했다고 느끼면 오래 분노한다.'],
+['anger','돈을 써야 하는 상황에서 내가 손해 보는 것 같으면 불쾌하다.'],
+['anger','경제적 불평등이나 돈으로 사람을 평가하는 태도를 보면 화가 난다.'],
+['anger','돈과 관련된 갈등이 생기면 감정적으로 반응하거나 단호하게 관계를 끊고 싶어진다.'],
+['joy','돈은 내가 원하는 경험과 삶을 만들어가는 즐거운 수단이라고 생각한다.'],
+['joy','좋은 경험이나 소중한 사람을 위해 돈을 쓰면 아깝기보다 행복하다.'],
+['joy','돈을 더 벌 수 있는 기회나 새로운 가능성을 생각하면 설렌다.'],
+['joy','돈을 쓰고 나서 무엇을 얻었는지, 어떤 가치를 만들었는지를 더 중요하게 생각한다.'],
+['joy','돈에 대해 이야기하거나 수입과 자산이 늘어나는 것을 생각하면 긍정적인 에너지가 생긴다.'],
+['apathy','통장 잔액이나 카드 사용 내역을 확인하는 일이 귀찮거나 부담스럽다.'],
+['apathy','돈을 관리해야 한다는 생각은 하지만 자꾸 나중으로 미룬다.'],
+['apathy','얼마를 벌고 얼마를 쓰는지 정확히 파악하지 않고 지낼 때가 많다.'],
+['apathy','돈 문제가 생겨도 당장 해결하기보다 일단 생각하지 않으려고 한다.'],
+['apathy','돈을 많이 벌든 적게 벌든 크게 달라질 것 같지 않고, 돈 자체에 별다른 감흥이 없다.']
+];
+let answers=Array(25).fill(null),idx=0,order=qs.map((_,i)=>i);
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo({top:0,behavior:'smooth'});updateBar()}
+function updateBar(){let pct=({intro:0,quiz:idx/25*75,scoreScreen:85,resultScreen:100})[document.querySelector('.screen.active').id]||0;document.getElementById('bar').style.width=pct+'%'}
+function startTest(){idx=0;renderQuestion();show('quiz')}
+function renderQuestion(){let [type,q]=qs[idx],t=types.find(x=>x.id===type);document.getElementById('category').textContent=String(types.findIndex(x=>x.id===type)+1).padStart(2,'0')+' · '+t.name;document.getElementById('qnum').textContent=String(idx+1).padStart(2,'0')+' / 25';document.getElementById('question').textContent=q;let labels=['전혀 그렇지 않다','별로 그렇지 않다','보통이다','대체로 그렇다','매우 그렇다'];document.getElementById('choices').innerHTML=labels.map((l,i)=>`<button class="choice ${answers[idx]===i?'selected':''}" onclick="choose(${i})"><span class="radio"></span><span>${l}</span></button>`).join('');document.getElementById('prev').disabled=idx===0;document.getElementById('next').disabled=answers[idx]===null;document.getElementById('next').textContent=idx===24?'결과 확인 →':'다음 →';updateBar()}
+function choose(v){answers[idx]=v;renderQuestion()}
+function move(d){if(d===1&&answers[idx]===null)return;if(idx===24&&d===1){calculate();show('scoreScreen');return}idx=Math.max(0,Math.min(24,idx+d));renderQuestion()}
+function calculate(){let counts=Object.fromEntries(types.map(t=>[t.id,0]));answers.forEach((a,i)=>{counts[qs[i][0]]+=a});window.counts=counts;let max=Math.max(...Object.values(counts));let winners=types.filter(t=>counts[t.id]===max);document.getElementById('scoreList').innerHTML=types.map(t=>`<div class="score-row"><span class="score-name">${t.name}</span><div class="track"><div class="fill" style="width:${counts[t.id]/20*100}%;background:${t.color}"></div></div><span class="score">${counts[t.id]}</span></div>`).join('');document.getElementById('winnerNote').innerHTML=max===0?'모든 문항에서 낮은 점수를 선택했어요. 결과를 가볍게 참고해 주세요.':`<strong>가장 높은 감정: ${winners.map(t=>t.name).join(' + ')}</strong><br>${winners.length>1?'공동으로 높은 감정이 나타났어요. 복합 유형으로 살펴보세요.':'이 감정이 현재 돈을 대하는 나의 대표적인 경향으로 나타났어요.'}`}
+function showResult(){let max=Math.max(...Object.values(counts));let winners=types.filter(t=>counts[t.id]===max);document.getElementById('resultContent').innerHTML=winners.map(t=>`<div class="result-card"><div class="type-label">${t.en} · ${counts[t.id]} / 20</div><h2 style="margin-top:8px">${t.name}</h2><div class="art" style="background:${t.bg}"><div class="emoji coin">${coinSVG(t)}</div></div><div class="tagline">“${t.line}”</div><div class="panel"><div class="section-label">01 · 나의 돈에 대한 믿음</div><p>${t.belief}</p></div><div class="panel"><div class="section-label">02 · 나의 돈에 대한 행동</div><ul>${t.behavior.map(x=>`<li>${x}</li>`).join('')}</ul></div><div class="panel"><div class="section-label">03 · 나에게 필요한 변화</div><p>${t.change}</p></div></div>`).join('');renderThink(winners);show('resultScreen')}
+function restart(){answers=Array(25).fill(null);idx=0;document.getElementById('thinkList').innerHTML='';resetShare();show('intro')}
+
+/* ===== 오리지널 동전 캐릭터 (SVG, 외부 파일 없음) ===== */
+const coinRim={anxiety:'#b98a2c',sadness:'#4a7fae',anger:'#a9493c',joy:'#5a8a60',apathy:'#7d7590'};
+function coinBody(t,cx,cy,r){
+  const rim=coinRim[t.id];
+  return `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${t.color}" stroke="${rim}" stroke-width="6"/>`+
+  `<circle cx="${cx}" cy="${cy}" r="${r-12}" fill="none" stroke="${rim}" stroke-width="3" opacity=".35"/>`+
+  `<path d="M${cx-r*.62} ${cy-r*.38} A${r*.78} ${r*.78} 0 0 1 ${cx-r*.1} ${cy-r*.74}" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" opacity=".5"/>`;
+}
+function coinSVG(t,size){
+  const ink='#24231f',rim=coinRim[t.id],s=size||200;
+  const L=`stroke="${ink}" stroke-width="5" stroke-linecap="round" fill="none"`;
+  const A=`stroke="${rim}" stroke-width="8" stroke-linecap="round" fill="none"`;
+  let g='';
+  if(t.id==='anxiety'){ // 금고 뒤에서 빼꼼 내다보는 동전
+    g=coinBody(t,100,90,58)+
+    `<path d="M72 70 L90 63 M128 70 L110 63" ${L}/>`+
+    `<circle cx="83" cy="84" r="10" fill="#fff" stroke="${ink}" stroke-width="3"/><circle cx="117" cy="84" r="10" fill="#fff" stroke="${ink}" stroke-width="3"/>`+
+    `<circle cx="86" cy="86" r="4.5" fill="${ink}"/><circle cx="120" cy="86" r="4.5" fill="${ink}"/>`+
+    `<path d="M86 106 q5 -5 10 0 q5 5 10 0" stroke="${ink}" stroke-width="4" stroke-linecap="round" fill="none"/>`+
+    `<path d="M156 46 q8 12 0 18 q-8 -6 0 -18z" fill="#9fd0f0"/>`+
+    `<rect x="38" y="116" width="124" height="70" rx="12" fill="#8f877c"/><rect x="49" y="127" width="102" height="48" rx="7" fill="#a49c90"/>`+
+    `<circle cx="100" cy="151" r="13" fill="#e2dbcf" stroke="#6f685f" stroke-width="3"/><path d="M100 151 L100 142" stroke="#6f685f" stroke-width="3" stroke-linecap="round"/>`+
+    `<circle cx="68" cy="117" r="9" fill="${t.color}" stroke="${rim}" stroke-width="4"/><circle cx="132" cy="117" r="9" fill="${t.color}" stroke="${rim}" stroke-width="4"/>`;
+  }else if(t.id==='sadness'){ // 빈 지갑을 끌어안은 동전
+    g=`<ellipse cx="80" cy="186" rx="13" ry="6" fill="${rim}"/><ellipse cx="120" cy="186" rx="13" ry="6" fill="${rim}"/>`+
+    coinBody(t,100,92,58)+
+    `<path d="M70 76 L90 70 M130 76 L110 70" ${L}/>`+
+    `<circle cx="84" cy="89" r="5" fill="${ink}"/><circle cx="116" cy="89" r="5" fill="${ink}"/>`+
+    `<path d="M80 101 q5 9 0 13 q-5 -4 0 -13z" fill="#e7f0f7" stroke="#4a7fae" stroke-width="2"/>`+
+    `<path d="M88 116 Q100 106 112 116" ${L}/>`+
+    `<rect x="60" y="128" width="80" height="54" rx="9" fill="#a77b5a"/><rect x="66" y="128" width="68" height="10" rx="3" fill="#6e4c34"/>`+
+    `<path d="M60 150 H140" stroke="#8a6346" stroke-width="3"/><circle cx="128" cy="160" r="5" fill="#e2c9a3"/>`+
+    `<path d="M45 110 Q48 142 70 150 M155 110 Q152 142 130 150" ${A}/>`;
+  }else if(t.id==='anger'){ // 저울 위에서 팔짱 낀 동전
+    g=`<rect x="62" y="170" width="76" height="12" rx="6" fill="#8f877c"/><rect x="95" y="152" width="10" height="20" fill="#8f877c"/>`+
+    `<ellipse cx="100" cy="152" rx="62" ry="9" fill="#b8b0a4"/>`+
+    `<path d="M86 140 V150 M114 140 V150" stroke="${rim}" stroke-width="7" stroke-linecap="round"/>`+
+    coinBody(t,100,88,58)+
+    `<path d="M70 66 L92 77 M130 66 L108 77" stroke="${ink}" stroke-width="6" stroke-linecap="round"/>`+
+    `<circle cx="84" cy="86" r="5" fill="${ink}"/><circle cx="116" cy="86" r="5" fill="${ink}"/>`+
+    `<path d="M88 112 L112 112" stroke="${ink}" stroke-width="5" stroke-linecap="round"/>`+
+    `<path d="M44 100 Q86 136 132 114" stroke="${rim}" stroke-width="11" stroke-linecap="round" fill="none"/>`+
+    `<path d="M156 100 Q114 136 68 114" stroke="${rim}" stroke-width="11" stroke-linecap="round" fill="none"/>`+
+    `<path d="M156 100 Q114 136 68 114" stroke="${t.color}" stroke-width="4" stroke-linecap="round" fill="none" opacity=".6"/>`+
+    `<circle cx="132" cy="114" r="8" fill="${t.color}" stroke="${rim}" stroke-width="4"/><circle cx="68" cy="114" r="8" fill="${t.color}" stroke="${rim}" stroke-width="4"/>`+
+    `<path d="M152 28 q7 -6 0 -12 M166 34 q7 -6 0 -12" stroke="#a9493c" stroke-width="4" stroke-linecap="round" fill="none"/>`;
+  }else if(t.id==='joy'){ // 날개 달린 지폐를 타고 나는 동전
+    g=`<path d="M44 150 C20 128 6 140 14 152 C4 158 14 170 34 164 Z" fill="#fff" stroke="#c9c2b6" stroke-width="3"/>`+
+    `<path d="M156 150 C180 128 194 140 186 152 C196 158 186 170 166 164 Z" fill="#fff" stroke="#c9c2b6" stroke-width="3"/>`+
+    `<rect x="40" y="140" width="120" height="40" rx="6" fill="#d7e8d2" stroke="#6f9a74" stroke-width="3"/>`+
+    `<circle cx="100" cy="160" r="10" fill="none" stroke="#6f9a74" stroke-width="3"/><path d="M52 150 h16 M132 170 h16" stroke="#6f9a74" stroke-width="3" stroke-linecap="round"/>`+
+    coinBody(t,100,86,56)+
+    `<path d="M48 80 Q34 62 40 44 M152 80 Q166 62 160 44" ${A}/>`+
+    `<path d="M76 84 Q84 75 92 84 M108 84 Q116 75 124 84" ${L}/>`+
+    `<path d="M82 100 Q100 122 118 100 Z" fill="#7a3b38"/>`+
+    `<circle cx="72" cy="98" r="7" fill="#f2a7a0" opacity=".55"/><circle cx="128" cy="98" r="7" fill="#f2a7a0" opacity=".55"/>`+
+    `<path d="M28 28 l4 10 l10 4 l-10 4 l-4 10 l-4 -10 l-10 -4 l10 -4z" fill="#f1d46b"/><path d="M172 20 l3 7 l7 3 l-7 3 l-3 7 l-3 -7 l-7 -3 l7 -3z" fill="#f1d46b"/>`;
+  }else{ // 영수증 더미에 등을 돌리고 누운 동전
+    g=`<g transform="rotate(-8 50 150)"><rect x="18" y="112" width="52" height="68" rx="4" fill="#fffefa" stroke="#d6cfc4" stroke-width="3"/><path d="M28 128 h32 M28 140 h26 M28 152 h32 M28 164 h20" stroke="#d6cfc4" stroke-width="3" stroke-linecap="round"/></g>`+
+    `<g transform="rotate(10 46 120)"><rect x="24" y="96" width="46" height="58" rx="4" fill="#fffefa" stroke="#d6cfc4" stroke-width="3"/><path d="M33 110 h28 M33 122 h22 M33 134 h28" stroke="#d6cfc4" stroke-width="3" stroke-linecap="round"/></g>`+
+    `<ellipse cx="166" cy="176" rx="30" ry="11" fill="#fffefa" stroke="#d6cfc4" stroke-width="3"/>`+
+    `<ellipse cx="120" cy="186" rx="64" ry="6" fill="#00000010"/>`+
+    `<g transform="rotate(-18 128 130)">`+coinBody(t,128,130,52)+
+    `<path d="M112 124 h16 M140 124 h16" ${L}/><circle cx="125" cy="130" r="3.5" fill="${ink}"/><circle cx="153" cy="130" r="3.5" fill="${ink}"/>`+
+    `<path d="M130 150 h12" ${L}/></g>`+
+    `<path d="M88 168 Q100 180 116 174" ${A}/>`+
+    `<text x="150" y="58" font-family="sans-serif" font-weight="800" font-size="22" fill="#aaa2b6">z</text><text x="166" y="40" font-family="sans-serif" font-weight="800" font-size="16" fill="#aaa2b6">z</text>`;
+  }
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="${s}" height="${s}" role="img" aria-label="${t.name} 동전 캐릭터">${g}</svg>`;
+}
+
+/* ===== THINK ABOUT IT · 유형별 예시 답변 ===== */
+const thinkQuestions=[
+'돈이 많아지면 무엇이 가장 달라질 것이라고 기대하나요?',
+'돈과 관련해 내가 가장 두려워하는 것은 무엇인가요?',
+'지금 돈 때문에 미루고 있는 선택이 있나요?',
+'앞으로 돈과 어떤 관계를 맺고 싶나요?'
+];
+const thinkExamples={
+anxiety:[
+'드디어 마음 놓고 잠들 수 있을 것 같아요. 갑자기 큰 지출이 생겨도 버틸 수 있다는 안심이 가장 클 거예요.',
+'예상하지 못한 일로 모아둔 돈이 한꺼번에 사라지는 거요. 아프거나 일이 끊기는 상황을 자주 상상해요.',
+'이직이나 새로운 공부요. 수입이 잠깐이라도 줄어들까 봐 "조금만 더 모으고"라며 계속 미루고 있어요.',
+'돈이 나를 지켜주는 벽이 아니라, 내가 고를 수 있는 선택지를 넓혀주는 도구였으면 해요.'
+],
+sadness:[
+'그동안 포기했던 것들을 하나씩 해보고 싶어요. 어릴 때 못 배운 것, 미뤄둔 여행 같은 것들이요.',
+'또다시 돈 때문에 소중한 기회를 놓치는 거요. 나만 뒤처지고 있다는 느낌이 제일 무서워요.',
+'나를 위한 작은 선물이나 배움이요. "지금 나한테 이건 사치 아닐까" 싶어서 장바구니에만 담아둬요.',
+'지나간 아쉬움보다 지금 내가 원하는 것을 기준으로 돈을 쓰는 관계가 되고 싶어요.'
+],
+anger:[
+'내가 한 일만큼 정당하게 인정받고 있다는 느낌이요. 불리한 조건을 참고 넘기지 않아도 될 것 같아요.',
+'열심히 해도 결국 손해 보거나 누군가에게 이용당하는 거요. 공정하지 않은 상황이 가장 두려워요.',
+'연봉이나 단가 협상이요. 말을 꺼내면 감정이 앞설 것 같아서 타이밍만 재고 있어요.',
+'화가 나기 전에 내가 원하는 조건을 먼저 분명하게 말할 수 있는, 당당한 관계를 맺고 싶어요.'
+],
+joy:[
+'더 많은 사람과 좋은 경험을 나눌 수 있을 거예요. 해보고 싶던 프로젝트도 바로 시작할 수 있고요.',
+'즐겁게 쓰다가 정작 중요한 순간에 선택권이 없어지는 거요. 계획 없이 흘러가는 게 조금 걱정돼요.',
+'장기 저축이나 투자 계획이요. 지금이 즐거우니까 "나중에 생각하지" 하고 넘기고 있어요.',
+'지금의 즐거움과 미래의 여유를 둘 다 지키는, 오래 함께 가는 관계를 만들고 싶어요.'
+],
+apathy:[
+'솔직히 크게 달라질 것 같진 않아요. 그래도 돈 걱정을 하지 않아도 된다는 점은 편할 것 같아요.',
+'모른 척하던 문제가 한꺼번에 터지는 거요. 확인하지 않은 카드값이나 고지서가 쌓여 있을까 봐요.',
+'가계부 쓰기나 보험·연금 정리요. 해야 하는 건 아는데 막상 시작하려면 피곤해져요.',
+'완벽하게 관리하진 못해도, 일주일에 한 번은 편하게 들여다볼 수 있는 가벼운 관계면 좋겠어요.'
+]
+};
+function iramyeon(w){const c=w.charCodeAt(w.length-1)-0xAC00;return w+((c>=0&&c<=11171&&c%28)?'이라면':'라면')}
+function renderThink(winners){
+  document.getElementById('thinkList').innerHTML=thinkQuestions.map((q,i)=>`<div class="think-q"><p class="think-q-title">${i+1}. ${q}</p>${winners.map(t=>`<div class="think-ex" style="border-left-color:${t.color}"><span class="who">${coinSVG(t,24)} ${iramyeon(t.name)}</span><p>${thinkExamples[t.id][i]}</p></div>`).join('')}</div>`).join('');
+}
+
+/* ===================== 결과 공유 (추가) =====================
+   공유 메시지·이미지는 오직 types 데이터와 counts(점수)만으로 만듭니다.
+   자기 성찰 답변(r1~r4 textarea)은 이 아래 어떤 코드에서도 읽지 않습니다. */
+
+// 공개 테스트 주소가 생기면 여기에 입력하세요. 예: 'https://example.com/money-inside-out'
+// 비워두면 웹에 올려진 경우 현재 페이지 주소를, 내 컴퓨터에서 연 파일이면 링크 없이 공유합니다.
+const TEST_URL='';
+
+let shareBusy=false,imageBusy=false,toastTimer=null,previewUrl=null;
+
+function getTestUrl(){
+  if(TEST_URL) return TEST_URL;
+  return /^https?:$/.test(location.protocol)?location.origin+location.pathname:'';
+}
+function titleCase(s){return s.toLowerCase().replace(/(^|\s)\S/g,c=>c.toUpperCase())}
+function getWinners(){
+  if(!window.counts) return [];
+  const max=Math.max(...Object.values(counts));
+  return types.filter(t=>counts[t.id]===max);
+}
+function buildShareText(){
+  const w=getWinners();if(!w.length) return '';
+  const url=getTestUrl();
+  const label=t=>`‘${t.name}(${titleCase(t.en)})’`;
+  const score=counts[w[0].id];
+  let lines=['MONEY INSIDE OUT',''];
+  if(w.length===1){
+    lines.push(`나는 돈 앞에서 ${label(w[0])} 유형이 나왔어요. (${score} / 20점)`,'',`“${w[0].line}”`);
+  }else if(w.length===types.length){
+    lines.push(`나는 돈 앞에서 다섯 감정이 모두 같은 점수로 나왔어요. (각 ${score} / 20점)`);
+  }else{
+    lines.push(`나는 돈 앞에서 ${w.map(label).join(' + ')} 복합 유형이 나왔어요. (각 ${score} / 20점)`,'');
+    w.forEach(t=>lines.push(`${t.name}: “${t.line}”`));
+  }
+  lines.push('','혹시 당신은 돈 앞에서 어떤 감정을 느끼나요?',url?`나의 돈 감정을 확인해보세요! 👉 ${url}`:'나의 돈 감정을 확인해보세요!');
+  return lines.join('\n');
+}
+function setStatus(msg){document.getElementById('shareStatus').textContent=msg}
+function toast(msg){
+  const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');
+  clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),2200);
+}
+function showManual(text){
+  const box=document.getElementById('shareManual'),ta=document.getElementById('shareManualText');
+  ta.value=text;box.classList.add('show');
+  try{ta.focus();ta.select();ta.setSelectionRange(0,text.length)}catch(e){}
+}
+function legacyCopy(text){
+  const ta=document.createElement('textarea');
+  ta.value=text;ta.setAttribute('readonly','');
+  ta.style.cssText='position:fixed;top:0;left:0;width:1px;height:1px;opacity:0;';
+  document.body.appendChild(ta);ta.select();ta.setSelectionRange(0,text.length);
+  let ok=false;try{ok=document.execCommand('copy')}catch(e){ok=false}
+  document.body.removeChild(ta);return ok;
+}
+async function copyText(text){
+  if(navigator.clipboard&&window.isSecureContext){
+    try{await navigator.clipboard.writeText(text);return true}catch(e){}
+  }
+  return legacyCopy(text);
+}
+async function copyResult(fromShare){
+  const text=buildShareText();if(!text) return;
+  const ok=await copyText(text);
+  if(ok){
+    document.getElementById('shareManual').classList.remove('show');
+    setStatus(fromShare?'이 브라우저는 바로 공유를 지원하지 않아 결과를 복사했어요. 원하는 곳에 붙여넣어 주세요.':'결과가 복사되었습니다.');
+    toast('결과가 복사되었습니다.');
+  }else{
+    setStatus('자동 복사가 지원되지 않는 환경이에요.');
+    showManual(text);
+  }
+}
+async function shareResult(){
+  if(shareBusy) return;
+  const text=buildShareText();if(!text) return;
+  shareBusy=true;const btn=document.getElementById('shareBtn');btn.disabled=true;
+  try{
+    if(navigator.share){
+      try{
+        await navigator.share({title:'MONEY INSIDE OUT',text});
+        setStatus('');
+      }catch(e){
+        if(e&&e.name==='AbortError'){setStatus('')}  // 사용자가 공유 창을 닫은 경우
+        else await copyResult(true);
+      }
+    }else{
+      await copyResult(true);
+    }
+  }finally{shareBusy=false;btn.disabled=false}
+}
+
+/* ----- 결과 이미지 만들기 (canvas, 외부 라이브러리 없음) ----- */
+const FONT='Inter,-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR","Noto Sans CJK KR",sans-serif';
+function rr(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath()}
+function wrapLines(ctx,text,maxW){
+  const out=[];let line='';
+  for(const ch of Array.from(text)){
+    const test=line+ch;
+    if(ctx.measureText(test).width>maxW&&line){
+      // 가능하면 공백에서 줄바꿈
+      const sp=line.lastIndexOf(' ');
+      if(sp>0&&ch!==' '){out.push(line.slice(0,sp));line=line.slice(sp+1)+ch}
+      else{out.push(line);line=ch===' '?'':ch}
+    }else line=test;
+  }
+  if(line) out.push(line);return out;
+}
+function loadImg(src){return new Promise(res=>{const im=new Image();im.onload=()=>res(im);im.onerror=()=>res(null);im.src=src})}
+async function drawResultImage(useCoins=true){
+  const w=getWinners();if(!w.length) return null;
+  let imgs=[];
+  if(useCoins){imgs=await Promise.all(w.map(t=>loadImg('data:image/svg+xml;charset=utf-8,'+encodeURIComponent(coinSVG(t,400)))));if(imgs.some(x=>!x))imgs=[]}
+  const W=1080,H=1350,c=document.createElement('canvas');c.width=W;c.height=H;
+  const ctx=c.getContext('2d'),main=w[0],single=w.length===1,score=counts[main.id];
+  ctx.fillStyle='#f7f4ee';ctx.fillRect(0,0,W,H);
+  ctx.textBaseline='alphabetic';
+  // 상단 라벨
+  ctx.fillStyle='#6c665e';ctx.font=`800 26px ${FONT}`;ctx.textAlign='left';ctx.fillText('MONEY INSIDE OUT',80,110);
+  ctx.textAlign='right';ctx.font=`600 26px ${FONT}`;ctx.fillText('MY MONEY EMOTION',W-80,110);
+  // 결과 카드
+  rr(ctx,80,150,W-160,640,44);ctx.fillStyle=single?main.bg:'#efebe3';ctx.fill();
+  ctx.save();rr(ctx,80,150,W-160,640,44);ctx.clip();
+  ctx.fillStyle='#ffffff65';ctx.beginPath();ctx.arc(110,170,190,0,Math.PI*2);ctx.fill();
+  ctx.beginPath();ctx.arc(W-110,800,160,0,Math.PI*2);ctx.fill();ctx.restore();
+  ctx.textAlign='center';
+  if(imgs.length){
+    const n=imgs.length,sz=n===1?240:n===2?210:n===3?190:150,gap=n>3?16:24,tot=n*sz+(n-1)*gap;
+    imgs.forEach((im,i)=>ctx.drawImage(im,W/2-tot/2+i*(sz+gap),n===1?178:178+(240-sz)/2,sz,sz));
+  }else{
+    ctx.font=`150px ${FONT}`;ctx.fillStyle='#24231f';
+    ctx.fillText(w.slice(0,3).map(t=>t.emoji).join(single?'':' '),W/2,365);
+  }
+  ctx.fillStyle='#77736c';ctx.font=`800 26px ${FONT}`;
+  const enText=single?`${main.en} · ${score} / 20`:`${w.length===types.length?'ALL FIVE':'MIXED TYPE'} · ${score} / 20`;
+  ctx.fillText(enText,W/2,450);
+  ctx.fillStyle='#24231f';
+  const title=w.length===types.length?'다섯 감정 모두':w.map(t=>t.name).join(' + ');
+  let fs=92;ctx.font=`800 ${fs}px ${FONT}`;
+  while(ctx.measureText(title).width>W-240&&fs>48){fs-=4;ctx.font=`800 ${fs}px ${FONT}`}
+  ctx.fillText(title,W/2,560);
+  ctx.font=`700 36px ${FONT}`;ctx.fillStyle='#3a3833';
+  const tagline=single?`“${main.line}”`:(w.length===types.length?'다섯 감정이 같은 점수로 나타났어요.':'공동으로 높은 감정이 나타났어요.');
+  wrapLines(ctx,tagline,W-280).slice(0,3).forEach((l,i)=>ctx.fillText(l,W/2,650+i*52));
+  // 감정 지도 (점수 막대)
+  ctx.textAlign='left';ctx.fillStyle='#77736c';ctx.font=`850 24px ${FONT}`;ctx.fillText('나의 감정 지도',80,870);
+  types.forEach((t,i)=>{
+    const y=920+i*62,v=counts[t.id];
+    ctx.fillStyle='#24231f';ctx.font=`700 30px ${FONT}`;ctx.textAlign='left';ctx.fillText(t.name,80,y+10);
+    rr(ctx,250,y-8,W-250-160,22,11);ctx.fillStyle='#e8e2d8';ctx.fill();
+    if(v>0){rr(ctx,250,y-8,Math.max(22,(W-410)*v/20),22,11);ctx.fillStyle=t.color;ctx.fill()}
+    ctx.fillStyle='#77736c';ctx.font=`700 28px ${FONT}`;ctx.textAlign='right';ctx.fillText(String(v),W-80,y+11);
+  });
+  // 하단 안내
+  ctx.textAlign='center';ctx.fillStyle='#24231f';ctx.font=`800 32px ${FONT}`;
+  ctx.fillText('당신은 돈 앞에서 어떤 감정을 느끼나요?',W/2,1255);
+  const url=getTestUrl();
+  ctx.fillStyle='#7968a8';ctx.font=`700 24px ${FONT}`;
+  ctx.fillText(url?url.replace(/^https?:\/\//,''):'MONEY INSIDE OUT · SELF-DISCOVERY TEST',W/2,1300);
+  return c;
+}
+function canvasToBlob(c){return new Promise(res=>{if(c.toBlob)c.toBlob(b=>res(b),'image/png');else res(null)})}
+function showPreview(blob){
+  if(previewUrl) URL.revokeObjectURL(previewUrl);
+  previewUrl=URL.createObjectURL(blob);
+  document.getElementById('sharePreviewImg').src=previewUrl;
+  document.getElementById('sharePreview').classList.add('show');
+}
+function downloadBlob(blob,name){
+  const a=document.createElement('a');a.href=previewUrl||URL.createObjectURL(blob);a.download=name;
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+}
+async function shareImage(){
+  if(imageBusy) return;
+  imageBusy=true;const btn=document.getElementById('imageBtn');btn.disabled=true;
+  try{
+    let c=await drawResultImage();if(!c) return;
+    let blob=null;
+    try{blob=await canvasToBlob(c)}catch(e){c=await drawResultImage(false);blob=await canvasToBlob(c)}
+    if(!blob){setStatus('이 브라우저에서는 이미지를 만들 수 없어요. 결과 복사하기를 이용해 주세요.');return}
+    showPreview(blob);
+    const name='money-inside-out-result.png';
+    let file=null;try{file=new File([blob],name,{type:'image/png'})}catch(e){}
+    if(file&&navigator.canShare&&navigator.canShare({files:[file]})){
+      try{
+        await navigator.share({files:[file],title:'MONEY INSIDE OUT'});
+        setStatus('');return;
+      }catch(e){
+        if(e&&e.name==='AbortError'){setStatus('');return}
+      }
+    }
+    downloadBlob(blob,name);
+    setStatus('결과 이미지를 저장했어요. 저장이 안 되면 아래 이미지를 길게 눌러 저장해 주세요.');
+  }catch(e){
+    setStatus('이미지를 만드는 중 문제가 생겼어요. 결과 복사하기를 이용해 주세요.');
+  }finally{imageBusy=false;btn.disabled=false}
+}
+function resetShare(){
+  setStatus('');
+  document.getElementById('shareManual').classList.remove('show');
+  document.getElementById('shareManualText').value='';
+  document.getElementById('sharePreview').classList.remove('show');
+  document.getElementById('sharePreviewImg').removeAttribute('src');
+  if(previewUrl){URL.revokeObjectURL(previewUrl);previewUrl=null}
+}
+</script>
+</body></html>
