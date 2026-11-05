@@ -314,7 +314,22 @@ function buildShareText(){
     lines.push(`나는 돈 앞에서 ${w.map(label).join(' + ')} 복합 유형이 나왔어요. (각 ${score} / 20점)`,'');
     w.forEach(t=>lines.push(`${t.name}: “${t.line}”`));
   }
-  lines.push('','혹시 당신은 돈 앞에서 어떤 감정을 느끼나요?',url?`나의 돈 감정을 확인해보세요! 👉 ${url}`:'나의 돈 감정을 확인해보세요!');
+  // 나의 감정 지도
+  lines.push('','📊 나의 감정 지도');
+  types.forEach(t=>lines.push(`${t.name} ${counts[t.id]}점`));
+  // 유형별 해석
+  w.forEach(t=>{
+    lines.push('','━━━━━━━━━━');
+    if(w.length>1) lines.push(`${t.name} · ${titleCase(t.en)}`,`“${t.line}”`,'');
+    lines.push('01 · 나의 돈에 대한 믿음',t.belief,'','02 · 나의 돈에 대한 행동',...t.behavior.map(b=>`· ${b}`),'','03 · 나에게 필요한 변화',t.change);
+  });
+  // THINK ABOUT IT
+  lines.push('','━━━━━━━━━━','THINK ABOUT IT · 돈과 나는 어떤 관계를 맺고 싶을까?');
+  thinkQuestions.forEach((q,i)=>{
+    lines.push('',`${i+1}. ${q}`);
+    w.forEach(t=>lines.push(`${w.length>1?iramyeon(t.name)+': ':'→ '}${thinkExamples[t.id][i]}`));
+  });
+  lines.push('','━━━━━━━━━━','혹시 당신은 돈 앞에서 어떤 감정을 느끼나요?',url?`나의 돈 감정을 확인해보세요! 👉 ${url}`:'나의 돈 감정을 확인해보세요!');
   return lines.join('\n');
 }
 function setStatus(msg){document.getElementById('shareStatus').textContent=msg}
@@ -393,53 +408,106 @@ async function drawResultImage(useCoins=true){
   const w=getWinners();if(!w.length) return null;
   let imgs=[];
   if(useCoins){imgs=await Promise.all(w.map(t=>loadImg('data:image/svg+xml;charset=utf-8,'+encodeURIComponent(coinSVG(t,400)))));if(imgs.some(x=>!x))imgs=[]}
-  const W=1080,H=1350,c=document.createElement('canvas');c.width=W;c.height=H;
-  const ctx=c.getContext('2d'),main=w[0],single=w.length===1,score=counts[main.id];
-  ctx.fillStyle='#f7f4ee';ctx.fillRect(0,0,W,H);
-  ctx.textBaseline='alphabetic';
-  // 상단 라벨
-  ctx.fillStyle='#6c665e';ctx.font=`800 26px ${FONT}`;ctx.textAlign='left';ctx.fillText('MONEY INSIDE OUT',80,110);
-  ctx.textAlign='right';ctx.font=`600 26px ${FONT}`;ctx.fillText('MY MONEY EMOTION',W-80,110);
-  // 결과 카드
-  rr(ctx,80,150,W-160,640,44);ctx.fillStyle=single?main.bg:'#efebe3';ctx.fill();
-  ctx.save();rr(ctx,80,150,W-160,640,44);ctx.clip();
-  ctx.fillStyle='#ffffff65';ctx.beginPath();ctx.arc(110,170,190,0,Math.PI*2);ctx.fill();
-  ctx.beginPath();ctx.arc(W-110,800,160,0,Math.PI*2);ctx.fill();ctx.restore();
-  ctx.textAlign='center';
-  if(imgs.length){
-    const n=imgs.length,sz=n===1?240:n===2?210:n===3?190:150,gap=n>3?16:24,tot=n*sz+(n-1)*gap;
-    imgs.forEach((im,i)=>ctx.drawImage(im,W/2-tot/2+i*(sz+gap),n===1?178:178+(240-sz)/2,sz,sz));
-  }else{
-    ctx.font=`150px ${FONT}`;ctx.fillStyle='#24231f';
-    ctx.fillText(w.slice(0,3).map(t=>t.emoji).join(single?'':' '),W/2,365);
-  }
-  ctx.fillStyle='#77736c';ctx.font=`800 26px ${FONT}`;
-  const enText=single?`${main.en} · ${score} / 20`:`${w.length===types.length?'ALL FIVE':'MIXED TYPE'} · ${score} / 20`;
-  ctx.fillText(enText,W/2,450);
-  ctx.fillStyle='#24231f';
-  const title=w.length===types.length?'다섯 감정 모두':w.map(t=>t.name).join(' + ');
-  let fs=92;ctx.font=`800 ${fs}px ${FONT}`;
-  while(ctx.measureText(title).width>W-240&&fs>48){fs-=4;ctx.font=`800 ${fs}px ${FONT}`}
-  ctx.fillText(title,W/2,560);
-  ctx.font=`700 36px ${FONT}`;ctx.fillStyle='#3a3833';
-  const tagline=single?`“${main.line}”`:(w.length===types.length?'다섯 감정이 같은 점수로 나타났어요.':'공동으로 높은 감정이 나타났어요.');
-  wrapLines(ctx,tagline,W-280).slice(0,3).forEach((l,i)=>ctx.fillText(l,W/2,650+i*52));
-  // 감정 지도 (점수 막대)
-  ctx.textAlign='left';ctx.fillStyle='#77736c';ctx.font=`850 24px ${FONT}`;ctx.fillText('나의 감정 지도',80,870);
-  types.forEach((t,i)=>{
-    const y=920+i*62,v=counts[t.id];
-    ctx.fillStyle='#24231f';ctx.font=`700 30px ${FONT}`;ctx.textAlign='left';ctx.fillText(t.name,80,y+10);
-    rr(ctx,250,y-8,W-250-160,22,11);ctx.fillStyle='#e8e2d8';ctx.fill();
-    if(v>0){rr(ctx,250,y-8,Math.max(22,(W-410)*v/20),22,11);ctx.fillStyle=t.color;ctx.fill()}
-    ctx.fillStyle='#77736c';ctx.font=`700 28px ${FONT}`;ctx.textAlign='right';ctx.fillText(String(v),W-80,y+11);
-  });
-  // 하단 안내
-  ctx.textAlign='center';ctx.fillStyle='#24231f';ctx.font=`800 32px ${FONT}`;
-  ctx.fillText('당신은 돈 앞에서 어떤 감정을 느끼나요?',W/2,1255);
-  const url=getTestUrl();
-  ctx.fillStyle='#7968a8';ctx.font=`700 24px ${FONT}`;
-  ctx.fillText(url?url.replace(/^https?:\/\//,''):'MONEY INSIDE OUT · SELF-DISCOVERY TEST',W/2,1300);
+  const W=1080;
+  // 1차: 높이 계산, 2차: 실제 그리기
+  const probe=document.createElement('canvas').getContext('2d');
+  const H=Math.ceil(paintResult(probe,false,w,imgs,W,0));
+  const scale=Math.min(1,15000/H); // 모바일 브라우저 캔버스 크기 제한 대비
+  const c=document.createElement('canvas');c.width=Math.round(W*scale);c.height=Math.round(H*scale);
+  const ctx=c.getContext('2d');ctx.scale(scale,scale);
+  paintResult(ctx,true,w,imgs,W,H);
   return c;
+}
+function paintResult(ctx,draw,w,imgs,W,H){
+  const D=f=>{if(draw)f()};
+  const main=w[0],single=w.length===1,score=counts[main.id],M=80,PW=W-M*2,PAD=44,TW=PW-PAD*2;
+  ctx.textBaseline='alphabetic';
+  D(()=>{ctx.fillStyle='#f7f4ee';ctx.fillRect(0,0,W,H)});
+  // 상단 라벨
+  D(()=>{ctx.fillStyle='#6c665e';ctx.font=`800 26px ${FONT}`;ctx.textAlign='left';ctx.fillText('MONEY INSIDE OUT',M,110);
+    ctx.textAlign='right';ctx.font=`600 26px ${FONT}`;ctx.fillText('MY MONEY EMOTION',W-M,110)});
+  // 결과 카드
+  D(()=>{rr(ctx,M,150,PW,640,44);ctx.fillStyle=single?main.bg:'#efebe3';ctx.fill();
+    ctx.save();rr(ctx,M,150,PW,640,44);ctx.clip();
+    ctx.fillStyle='#ffffff65';ctx.beginPath();ctx.arc(110,170,190,0,Math.PI*2);ctx.fill();
+    ctx.beginPath();ctx.arc(W-110,800,160,0,Math.PI*2);ctx.fill();ctx.restore();
+    ctx.textAlign='center';
+    if(imgs.length){
+      const n=imgs.length,sz=n===1?240:n===2?210:n===3?190:150,gap=n>3?16:24,tot=n*sz+(n-1)*gap;
+      imgs.forEach((im,i)=>ctx.drawImage(im,W/2-tot/2+i*(sz+gap),n===1?178:178+(240-sz)/2,sz,sz));
+    }else{ctx.font=`150px ${FONT}`;ctx.fillStyle='#24231f';ctx.fillText(w.slice(0,3).map(t=>t.emoji).join(single?'':' '),W/2,365)}
+    ctx.fillStyle='#77736c';ctx.font=`800 26px ${FONT}`;
+    ctx.fillText(single?`${main.en} · ${score} / 20`:`${w.length===types.length?'ALL FIVE':'MIXED TYPE'} · ${score} / 20`,W/2,450);
+    ctx.fillStyle='#24231f';
+    const title=w.length===types.length?'다섯 감정 모두':w.map(t=>t.name).join(' + ');
+    let fs=92;ctx.font=`800 ${fs}px ${FONT}`;
+    while(ctx.measureText(title).width>W-240&&fs>48){fs-=4;ctx.font=`800 ${fs}px ${FONT}`}
+    ctx.fillText(title,W/2,560);
+    ctx.font=`700 36px ${FONT}`;ctx.fillStyle='#3a3833';
+    const tagline=single?`“${main.line}”`:(w.length===types.length?'다섯 감정이 같은 점수로 나타났어요.':'공동으로 높은 감정이 나타났어요.');
+    wrapLines(ctx,tagline,W-280).slice(0,3).forEach((l,i)=>ctx.fillText(l,W/2,650+i*52));
+  });
+  // 감정 지도
+  D(()=>{ctx.textAlign='left';ctx.fillStyle='#77736c';ctx.font=`850 24px ${FONT}`;ctx.fillText('나의 감정 지도',M,870);
+    types.forEach((t,i)=>{const y=920+i*62,v=counts[t.id];
+      ctx.fillStyle='#24231f';ctx.font=`700 30px ${FONT}`;ctx.textAlign='left';ctx.fillText(t.name,M,y+10);
+      rr(ctx,250,y-8,W-250-160,22,11);ctx.fillStyle='#e8e2d8';ctx.fill();
+      if(v>0){rr(ctx,250,y-8,Math.max(22,(W-410)*v/20),22,11);ctx.fillStyle=t.color;ctx.fill()}
+      ctx.fillStyle='#77736c';ctx.font=`700 28px ${FONT}`;ctx.textAlign='right';ctx.fillText(String(v),W-M,y+11)})});
+  let y=1230;
+  // 텍스트 단락 (줄바꿈 포함), 그린 높이 반환
+  const para=(text,x,yy,width,font,color,lh)=>{ctx.font=font;const ls=wrapLines(ctx,text,width);
+    D(()=>{ctx.fillStyle=color;ctx.textAlign='left';ls.forEach((l,i)=>ctx.fillText(l,x,yy+i*lh))});return ls.length*lh};
+  // 패널: 내용 높이를 먼저 잰 뒤 배경 → 내용 순서로 그림
+  const panel=(yy,body,bg='#fffefa',stroke='#e8e2d8')=>{
+    const h=body(yy+PAD,false)+PAD*2-14;
+    D(()=>{rr(ctx,M,yy,PW,h,30);ctx.fillStyle=bg;ctx.fill();ctx.lineWidth=2;ctx.strokeStyle=stroke;ctx.stroke()});
+    if(draw) body(yy+PAD,true);return h};
+  const label=(text,x,yy)=>{D(()=>{ctx.font=`850 22px ${FONT}`;ctx.fillStyle='#77736c';ctx.textAlign='left';ctx.fillText(text,x,yy+22)});return 46};
+  const BODY=`500 29px ${FONT}`,BC='#514d46',LH=46;
+  w.forEach((t,ti)=>{
+    if(!single){ // 복합 유형이면 유형별 머리글
+      y+=20;
+      D(()=>{if(imgs[ti])ctx.drawImage(imgs[ti],M,y-8,72,72);ctx.textAlign='left';
+        ctx.font=`800 40px ${FONT}`;ctx.fillStyle='#24231f';ctx.fillText(t.name,M+(imgs[ti]?88:0),y+30);
+        ctx.font=`800 22px ${FONT}`;ctx.fillStyle='#77736c';ctx.fillText(t.en,M+(imgs[ti]?88:0),y+60)});
+      y+=84;
+      D(()=>{ctx.font=`700 30px ${FONT}`});
+      const tl=para(`“${t.line}”`,M,y+30,PW,`700 30px ${FONT}`,'#3a3833',44);y+=tl+20;
+    }
+    const sections=[
+      ['01 · 나의 돈에 대한 믿음',(yy,dr)=>{const sv=draw;draw=dr;let h=label('01 · 나의 돈에 대한 믿음',M+PAD,yy);h+=para(t.belief,M+PAD,yy+h+22,TW,BODY,BC,LH);draw=sv;return h}],
+      ['02',(yy,dr)=>{const sv=draw;draw=dr;let h=label('02 · 나의 돈에 대한 행동',M+PAD,yy);
+        t.behavior.forEach(b=>{D(()=>{ctx.fillStyle=t.color;ctx.beginPath();ctx.arc(M+PAD+8,yy+h+12,6,0,Math.PI*2);ctx.fill()});
+          h+=para(b,M+PAD+28,yy+h+22,TW-28,BODY,BC,LH)+6});draw=sv;return h}],
+      ['03',(yy,dr)=>{const sv=draw;draw=dr;let h=label('03 · 나에게 필요한 변화',M+PAD,yy);h+=para(t.change,M+PAD,yy+h+22,TW,BODY,BC,LH);draw=sv;return h}]
+    ];
+    sections.forEach(([,body])=>{y+=panel(y,body)+20});
+  });
+  // THINK ABOUT IT
+  y+=10;
+  y+=panel(y,(yy,dr)=>{const sv=draw;draw=dr;
+    let h=label('THINK ABOUT IT · 나에게 던지는 질문',M+PAD,yy);
+    h+=para('돈과 나는 어떤 관계를 맺고 싶을까?',M+PAD,yy+h+30,TW,`800 38px ${FONT}`,'#24231f',52)+10;
+    h+=para('같은 감정을 가진 사람이라면 이렇게 답할지도 몰라요.',M+PAD,yy+h+20,TW,`500 24px ${FONT}`,'#77736c',36)+8;
+    thinkQuestions.forEach((q,qi)=>{
+      h+=24;h+=para(`${qi+1}. ${q}`,M+PAD,yy+h+24,TW,`750 29px ${FONT}`,'#24231f',44)+6;
+      w.forEach(t=>{
+        const top=yy+h+8,ex=thinkExamples[t.id][qi];
+        ctx.font=BODY;const lines=wrapLines(ctx,ex,TW-60).length;const bh=28+34+lines*LH+10;
+        D(()=>{rr(ctx,M+PAD,top,TW,bh,18);ctx.fillStyle='#faf7f1';ctx.fill();ctx.fillStyle=t.color;ctx.fillRect(M+PAD,top,7,bh)});
+        D(()=>{ctx.font=`800 22px ${FONT}`;ctx.fillStyle='#77736c';ctx.textAlign='left';ctx.fillText(iramyeon(t.name),M+PAD+30,top+46)});
+        para(ex,M+PAD+30,top+92,TW-60,BODY,BC,LH);
+        h+=bh+18;
+      });
+    });
+    draw=sv;return h});
+  // 하단 안내
+  y+=70;
+  D(()=>{ctx.textAlign='center';ctx.fillStyle='#24231f';ctx.font=`800 32px ${FONT}`;ctx.fillText('당신은 돈 앞에서 어떤 감정을 느끼나요?',W/2,y);
+    const url=getTestUrl();ctx.fillStyle='#7968a8';ctx.font=`700 24px ${FONT}`;
+    ctx.fillText(url?url.replace(/^https?:\/\//,''):'MONEY INSIDE OUT · SELF-DISCOVERY TEST',W/2,y+45)});
+  return y+110;
 }
 function canvasToBlob(c){return new Promise(res=>{if(c.toBlob)c.toBlob(b=>res(b),'image/png');else res(null)})}
 function showPreview(blob){
